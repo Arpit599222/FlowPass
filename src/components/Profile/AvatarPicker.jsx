@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { motion } from 'framer-motion';
 
 const PRESET_AVATARS = [
@@ -10,7 +10,24 @@ const PRESET_AVATARS = [
   { id: 'av6', url: 'https://api.dicebear.com/7.x/shapes/svg?seed=Minimal2' }
 ];
 
-export const AvatarPicker = ({ currentUrl, onSelect }) => {
+const AvatarOption = React.memo(({ preset, currentUrl, onSelect }) => {
+  const handleClick = useCallback(() => {
+    onSelect(preset.url);
+  }, [onSelect, preset.url]);
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className={`relative flex-shrink-0 w-12 h-12 rounded-full overflow-hidden transition-all duration-300 border-2 ${currentUrl === preset.url ? 'border-indigo-500 scale-110' : 'border-transparent opacity-60 hover:opacity-100 hover:scale-105'}`}
+    >
+      <img src={preset.url} alt="Avatar option" className="w-full h-full object-cover bg-white/5" />
+    </button>
+  );
+});
+
+export const AvatarPicker = React.memo(({ currentUrl, onSelect }) => {
+  // Optimized rendering to reduce unnecessary re-renders
   return (
     <motion.div 
       initial={{ opacity: 0, height: 0 }}
@@ -19,15 +36,13 @@ export const AvatarPicker = ({ currentUrl, onSelect }) => {
       className="w-full flex justify-center gap-3 overflow-x-auto py-2 no-scrollbar"
     >
       {PRESET_AVATARS.map((preset) => (
-        <button
-          key={preset.id}
-          type="button"
-          onClick={() => onSelect(preset.url)}
-          className={`relative flex-shrink-0 w-12 h-12 rounded-full overflow-hidden transition-all duration-300 border-2 ${currentUrl === preset.url ? 'border-indigo-500 scale-110' : 'border-transparent opacity-60 hover:opacity-100 hover:scale-105'}`}
-        >
-          <img src={preset.url} alt="Avatar option" className="w-full h-full object-cover bg-white/5" />
-        </button>
+        <AvatarOption 
+          key={preset.id} 
+          preset={preset} 
+          currentUrl={currentUrl} 
+          onSelect={onSelect} 
+        />
       ))}
     </motion.div>
   );
-};
+});

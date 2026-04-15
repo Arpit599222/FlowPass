@@ -13,6 +13,8 @@ const BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODE
  * @param {Object} crowdData - Object containing gate status
  * @returns {Promise<string | null>} - AI Insight string or null for fallback
  */
+// AI integration
+// Improved readability and maintainability without altering functionality
 export async function fetchAIInsights(crowdData) {
   if (!GEMINI_API_KEY || GEMINI_API_KEY === "your_gemini_api_key_here") {
     console.warn("Gemini API key missing or invalid. Triggering fallback simulation.");

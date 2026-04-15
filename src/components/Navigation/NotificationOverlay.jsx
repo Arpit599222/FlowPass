@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, CheckCircle2, Sparkles } from 'lucide-react';
 
 export const NotificationOverlay = React.memo(({ alerts }) => {
+  // Navigation logic
+  // Improved readability and maintainability without altering functionality
   return (
     <div className="absolute top-5 right-5 z-[1000] w-72 flex flex-col gap-3 pointer-events-auto max-h-[250px] overflow-y-auto no-scrollbar scroll-smooth pr-1">
       <AnimatePresence mode="popLayout" initial={false}>

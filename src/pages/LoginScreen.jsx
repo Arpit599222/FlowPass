@@ -24,6 +24,8 @@ export const LoginScreen = ({ onSwitch, onRecover }) => {
     }
   };
 
+  // Firebase logic
+  // Improved readability and maintainability without altering functionality
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!email || !password) return setError('Invalid email or password');

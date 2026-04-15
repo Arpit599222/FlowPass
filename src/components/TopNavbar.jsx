@@ -15,6 +15,44 @@ const MOCK_NOTIFICATIONS = [
   { id: 3, title: 'Crowd levels optimized', time: '12 min ago', type: 'success' },
 ];
 
+
+
+const getIconForType = (type) => {
+  switch(type) {
+    case 'alert': return <AlertTriangle size={16} className="text-amber-500" />;
+    case 'success': return <CheckCircle2 size={16} className="text-emerald-500" />;
+    case 'info':
+    default: return <Info size={16} className="text-indigo-400" />;
+  }
+};
+
+const ICON_MAP = {
+  Home,
+  MapPin,
+  Utensils,
+  Ticket
+};
+
+const DesktopNavLink = React.memo(({ link, activeTab, onTabChange }) => {
+  const handleClick = useCallback(() => {
+    onTabChange(link.id);
+  }, [link.id, onTabChange]);
+
+  return (
+    <button
+      onClick={handleClick}
+      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+        activeTab === link.id 
+          ? 'bg-indigo-500 text-white shadow-lg' 
+          : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-white/40 dark:hover:text-white dark:hover:bg-white/5'
+      }`}
+    >
+      {React.createElement(ICON_MAP[link.icon], { size: 14 })}
+      {link.label}
+    </button>
+  );
+});
+
 export const TopNavbar = React.memo(({ activeTab, onTabChange }) => {
   const { theme, toggleTheme } = useTheme();
   const { currentUser } = useAuth();
@@ -22,6 +60,8 @@ export const TopNavbar = React.memo(({ activeTab, onTabChange }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef(null);
 
+  // Optimized rendering to reduce unnecessary re-renders
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (notificationRef.current && !notificationRef.current.contains(event.target)) {
@@ -32,21 +72,17 @@ export const TopNavbar = React.memo(({ activeTab, onTabChange }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const getIconForType = (type) => {
-    switch(type) {
-      case 'alert': return <AlertTriangle size={16} className="text-amber-500" />;
-      case 'success': return <CheckCircle2 size={16} className="text-emerald-500" />;
-      case 'info':
-      default: return <Info size={16} className="text-indigo-400" />;
-    }
-  };
+  const handleHomeClick = useCallback(() => {
+    if (onTabChange) onTabChange('home');
+  }, [onTabChange]);
 
-  const ICON_MAP = {
-    Home,
-    MapPin,
-    Utensils,
-    Ticket
-  };
+  const handleProfileClick = useCallback(() => {
+    if (onTabChange) onTabChange('profile');
+  }, [onTabChange]);
+
+  const handleToggleNotifications = useCallback(() => {
+    setShowNotifications(prev => !prev);
+  }, []);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center justify-center pointer-events-none">
@@ -56,7 +92,7 @@ export const TopNavbar = React.memo(({ activeTab, onTabChange }) => {
         <motion.button 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => onTabChange && onTabChange('home')}
+          onClick={handleHomeClick}
           className="flex items-center gap-3 cursor-pointer group outline-none"
         >
           <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:rotate-12 transition-all">
@@ -73,18 +109,12 @@ export const TopNavbar = React.memo(({ activeTab, onTabChange }) => {
         {currentUser && onTabChange && (
           <div className="hidden md:flex items-center gap-2 bg-white/80 dark:bg-slate-900/40 border border-slate-200 dark:border-white/5 p-1.5 rounded-2xl shadow-xl backdrop-blur-xl">
             {NAV_CONFIG.MAIN_LINKS.map(link => (
-              <button
-                key={link.id}
-                onClick={() => onTabChange(link.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                  activeTab === link.id 
-                    ? 'bg-indigo-500 text-white shadow-lg' 
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-white/40 dark:hover:text-white dark:hover:bg-white/5'
-                }`}
-              >
-                {React.createElement(ICON_MAP[link.icon], { size: 14 })}
-                {link.label}
-              </button>
+              <DesktopNavLink 
+                key={link.id} 
+                link={link} 
+                activeTab={activeTab} 
+                onTabChange={onTabChange} 
+              />
             ))}
           </div>
         )}
@@ -106,7 +136,7 @@ export const TopNavbar = React.memo(({ activeTab, onTabChange }) => {
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowNotifications(!showNotifications)}
+                  onClick={handleToggleNotifications}
                   className={`w-10 h-10 rounded-xl bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 flex items-center justify-center transition-all ${showNotifications ? 'text-indigo-500 dark:text-indigo-400 border-indigo-500/50 ring-2 ring-indigo-500/10' : 'text-slate-500 hover:text-slate-900 dark:text-white/40 dark:hover:text-white'}`}
                 >
                   <Bell size={18} />
@@ -139,7 +169,7 @@ export const TopNavbar = React.memo(({ activeTab, onTabChange }) => {
               </div>
 
               <button 
-                onClick={() => onTabChange && onTabChange('profile')} 
+                onClick={handleProfileClick} 
                 className="flex items-center gap-3 pl-3 py-1.5 pr-1.5 bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl hover:border-slate-300 dark:hover:border-white/10 transition-all shadow-md outline-none"
               >
                 <div className="hidden lg:block text-right">

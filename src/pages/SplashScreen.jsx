@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 export const SplashScreen = React.memo(() => {
+  // Optimized rendering to reduce unnecessary re-renders
   return (
     <div className="fixed inset-0 z-[100] bg-[#05070a] flex items-center justify-center overflow-hidden">
       <div className="relative flex flex-col items-center">

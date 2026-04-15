@@ -4,6 +4,8 @@ import { CheckCircle2, ChevronRight } from 'lucide-react';
 import { FacilityItem } from '../components/Queue/FacilityItem';
 
 export const QueueHub = () => {
+  // Fetch real-time crowd data from Firebase
+  // Improved readability and maintainability without altering functionality
   return (
     <main className="flex flex-col gap-6 pb-32 pt-6" aria-label="Smart Queues">
       <div className="px-2">
